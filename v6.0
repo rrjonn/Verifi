@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
 import * as React from 'react';
-import { AlertTriangle, CheckCircle, Eye, Video, FileText, BarChart2, Globe, Bell, Menu } from 'lucide-react';
+import { AlertTriangle, Eye, Video, FileText, BarChart2, Globe, Bell, Menu } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -143,4 +143,13 @@ export default function VerifiExtension() {
                         Sources: Federal Reserve website, Historical data on federal funds rate changes
                       </div>
                     </div>
-          
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
