@@ -1,75 +1,78 @@
 'use client'
 
-import * as React from 'react'
-import { AlertTriangle, CheckCircle, Eye, Video, FileText, BarChart2, Globe, Bell, Menu } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import * as React from 'react';
+import { AlertTriangle, CheckCircle, Eye, Video, FileText, BarChart2, Globe, Bell, Menu } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 interface DashboardItem {
-  topic: string
-  accuracy: number
+  topic: string;
+  accuracy: number;
 }
 
 export default function VerifiExtension() {
-  const [isChecking, setIsChecking] = React.useState(false)
-  const [progress, setProgress] = React.useState(0)
-  const [showResult, setShowResult] = React.useState(false)
-  const [videoUrl, setVideoUrl] = React.useState('')
-  const [scientificArticle, setScientificArticle] = React.useState('')
-  const [error, setError] = React.useState<string | null>(null)
+  const [isChecking, setIsChecking] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
+  const [showResult, setShowResult] = React.useState(false);
+  const [videoUrl, setVideoUrl] = React.useState('');
+  const [scientificArticle, setScientificArticle] = React.useState('');
+  const [error, setError] = React.useState<string | null>(null);
   const [dashboardData] = React.useState<DashboardItem[]>([
     { topic: 'Politics', accuracy: 75 },
     { topic: 'Science', accuracy: 90 },
     { topic: 'Health', accuracy: 85 },
-  ])
+  ]);
 
   const startFactCheck = React.useCallback(() => {
-    setError(null)
-    setIsChecking(true)
-    setProgress(0)
-    setShowResult(false)
+    setError(null);
+    setIsChecking(true);
+    setProgress(0);
+    setShowResult(false);
 
     const interval = setInterval(() => {
       setProgress((prevProgress) => {
         if (prevProgress >= 100) {
-          clearInterval(interval)
-          setIsChecking(false)
-          setShowResult(true)
-          return 100
+          clearInterval(interval);
+          setIsChecking(false);
+          setShowResult(true);
+          return 100;
         }
-        return prevProgress + 10
-      })
-    }, 300)
+        return prevProgress + 10;
+      });
+    }, 300);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   const handleVideoAnalysis = React.useCallback(() => {
     try {
-      if (!videoUrl) return
-      const url = new URL(videoUrl)
-      console.log('Analyzing video:', url.toString())
+      if (!videoUrl) throw new Error('Invalid URL');
+      const url = new URL(videoUrl); // Ensures URL validation
+      console.log('Analyzing video:', url.toString());
     } catch (err) {
-      setError('Please enter a valid URL')
+      setError('Please enter a valid URL');
     }
-  }, [videoUrl])
+  }, [videoUrl]);
 
   const handleScientificArticle = React.useCallback(() => {
-    if (!scientificArticle.trim()) return
-    console.log('Analyzing article of length:', scientificArticle.length)
-  }, [scientificArticle])
+    if (!scientificArticle.trim()) {
+      setError('Scientific article text is required');
+      return;
+    }
+    console.log('Analyzing article of length:', scientificArticle.length);
+  }, [scientificArticle]);
 
   return (
     <div className="w-full min-h-screen bg-background">
@@ -115,12 +118,10 @@ export default function VerifiExtension() {
                   <div className="border-l-4 border-primary pl-4 italic">
                     The Federal Reserve plans to cut interest rates by 2% next quarter.
                   </div>
-                  {error && (
-                    <p className="text-sm text-destructive">{error}</p>
-                  )}
+                  {error && <p className="text-sm text-destructive">{error}</p>}
                   {!isChecking && !showResult && (
                     <Button onClick={startFactCheck} className="w-full">
-                      <Eye className="mr-2 h-4 w-4" /> Verifi This Text
+                      <Eye className="mr-2 h-4 w-4" /> Verify This Text
                     </Button>
                   )}
                   {isChecking && (
@@ -142,76 +143,4 @@ export default function VerifiExtension() {
                         Sources: Federal Reserve website, Historical data on federal funds rate changes
                       </div>
                     </div>
-                  )}
-                </div>
-              </TabsContent>
-              <TabsContent value="video">
-                <div className="space-y-4">
-                  <p className="text-sm">Analyze political speeches and video content for factual accuracy.</p>
-                  <div className="space-y-2">
-                    <Label htmlFor="video-url">Video URL</Label>
-                    <Input
-                      id="video-url"
-                      placeholder="Enter video URL"
-                      value={videoUrl}
-                      onChange={(e) => setVideoUrl(e.target.value)}
-                      type="url"
-                    />
-                  </div>
-                  <Button onClick={handleVideoAnalysis} className="w-full" disabled={!videoUrl}>
-                    <Video className="mr-2 h-4 w-4" /> Analyze Video
-                  </Button>
-                </div>
-              </TabsContent>
-              <TabsContent value="science">
-                <div className="space-y-4">
-                  <p className="text-sm">Examine scientific articles for methodology and compare with recent research.</p>
-                  <div className="space-y-2">
-                    <Label htmlFor="scientific-article">Scientific Article</Label>
-                    <Textarea
-                      id="scientific-article"
-                      placeholder="Paste scientific article text here"
-                      value={scientificArticle}
-                      onChange={(e) => setScientificArticle(e.target.value)}
-                      className="min-h-[100px]"
-                    />
-                  </div>
-                  <Button onClick={handleScientificArticle} className="w-full" disabled={!scientificArticle.trim()}>
-                    <FileText className="mr-2 h-4 w-4" /> Analyze Scientific Article
-                  </Button>
-                </div>
-              </TabsContent>
-              <TabsContent value="dashboard">
-                <div className="space-y-4">
-                  <p className="text-sm">Access your personalized information dashboard for tracked topics.</p>
-                  <div className="space-y-2">
-                    {dashboardData.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <span>{item.topic}</span>
-                        <div className="flex items-center">
-                          <Progress value={item.accuracy} className="w-24 mr-2" />
-                          <span className="text-sm">{item.accuracy}%</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <Button className="w-full">
-                    <BarChart2 className="mr-2 h-4 w-4" /> View Detailed Dashboard
-                  </Button>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="outline" size="sm">
-              <Globe className="mr-2 h-4 w-4" /> Check Entire Page
-            </Button>
-            <Button variant="outline" size="sm">
-              <Bell className="mr-2 h-4 w-4" /> Set Alert
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    </div>
-  )
-}
+          
